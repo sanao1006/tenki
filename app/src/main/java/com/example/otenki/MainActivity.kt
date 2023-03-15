@@ -43,13 +43,14 @@ class MainActivity : AppCompatActivity() {
 
     @UiThread
     private fun receiveWeatherInfo(urlFull: String){
-        val backgroundReceiver = WeatherInfoBackgroundReceiver()
+        val backgroundReceiver = WeatherInfoBackgroundReceiver(urlFull)
         val executeService = Executors.newSingleThreadExecutor()
         val future = executeService.submit(backgroundReceiver)
         val result = future.get()
     }
 
-    private  inner class  WeatherInfoBackgroundReceiver(): Callable<String>{
+    private  inner class  WeatherInfoBackgroundReceiver(url: String): Callable<String>{
+        private val _url = url
         @WorkerThread
         override fun call(): String {
             TODO("Not yet implemented")
