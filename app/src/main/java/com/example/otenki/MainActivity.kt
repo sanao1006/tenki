@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.SimpleAdapter
+import androidx.annotation.UiThread
+import androidx.annotation.WorkerThread
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
@@ -39,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         return  list
     }
 
+    @UiThread
     private fun receiveWeatherInfo(urlFull: String){
         val backgroundReceiver = WeatherInfoBackgroundReceiver()
         val executeService = Executors.newSingleThreadExecutor()
@@ -47,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private  inner class  WeatherInfoBackgroundReceiver(): Callable<String>{
+        @WorkerThread
         override fun call(): String {
             TODO("Not yet implemented")
         }
