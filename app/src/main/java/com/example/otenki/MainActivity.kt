@@ -2,16 +2,49 @@ package com.example.otenki
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ListView
+import android.widget.SimpleAdapter
 
 class MainActivity : AppCompatActivity() {
-    companion object{
+    companion object {
         private const val DEBUG_TAG = "AsyncSample"
         private const val WEATHER_INFO_URL = "https://api.openweathermap.org/data/2.5/weather?lang=ja"
         private const val APP_ID = "1a5c1da9c26466390fd4f592fa517ff9"
     }
+
     private var _list: MutableList<MutableMap<String, String>> = mutableListOf()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        _list = createList()
+
+        val lvCityList = findViewById<ListView>(R.id.lvCityList)
+        val from = arrayOf("name")
+        val to = intArrayOf(android.R.id.text1)
+        val adapter = SimpleAdapter(this@MainActivity, _list, android.R.layout.simple_list_item_1, from, to)
+        lvCityList.adapter = adapter
+        lvCityList.onItemClickListener = ListItemClickListener()
     }
+
+    private fun createList(): MutableList<MutableMap<String, String>>{
+        val list: MutableList<MutableMap<String, String>> = mutableListOf()
+        var city = mutableMapOf("name" to "大阪", "q" to "Osaka")
+        list.add(city)
+        city = mutableMapOf("name" to "神戸", "q" to "Kobe")
+        return  list
+    }
+
+    private fun receiveWeatherInfo(urlFull: String){
+        TODO()
+    }
+
+    private inner class ListItemClickListener: AdapterView.OnItemClickListener{
+        override fun onItemClick(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+            TODO("Not yet implemented")
+        }
+    }
+
 }
