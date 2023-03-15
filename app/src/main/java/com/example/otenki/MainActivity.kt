@@ -42,8 +42,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private inner class ListItemClickListener: AdapterView.OnItemClickListener{
-        override fun onItemClick(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-            TODO("Not yet implemented")
+        override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+            val item = _list.get(position)
+            val q = item.get("q")
+            q?.let{
+                val urlFull = "$WEATHER_INFO_URL&q=$q&appid=$APP_ID"
+                receiveWeatherInfo(urlFull)
+            }
         }
     }
 
