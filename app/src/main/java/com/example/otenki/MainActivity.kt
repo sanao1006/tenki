@@ -9,10 +9,13 @@ import android.widget.ListView
 import android.widget.SimpleAdapter
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
+import java.io.BufferedReader
 import java.io.InputStream
+import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import java.net.URL
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
@@ -80,7 +83,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun is2String(stream: InputStream): String {
-            TODO()
+            val sb = StringBuilder()
+            val reader = BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8))
+            var line = reader.readLine()
+            while(line != null) {
+                sb.append(line)
+                line = reader.readLine()
+            }
+            reader.close()
+            return sb.toString()
         }
 
     }
