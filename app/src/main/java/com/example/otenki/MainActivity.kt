@@ -2,12 +2,17 @@ package com.example.otenki
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.SimpleAdapter
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
+import java.net.URL
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
@@ -33,36 +38,58 @@ class MainActivity : AppCompatActivity() {
         lvCityList.onItemClickListener = ListItemClickListener()
     }
 
-    private fun createList(): MutableList<MutableMap<String, String>>{
+    private fun createList(): MutableList<MutableMap<String, String>> {
         val list: MutableList<MutableMap<String, String>> = mutableListOf()
         var city = mutableMapOf("name" to "大阪", "q" to "Osaka")
         list.add(city)
         city = mutableMapOf("name" to "神戸", "q" to "Kobe")
-        return  list
+        return list
     }
 
     @UiThread
-    private fun receiveWeatherInfo(urlFull: String){
+    private fun receiveWeatherInfo(urlFull: String) {
         val backgroundReceiver = WeatherInfoBackgroundReceiver(urlFull)
         val executeService = Executors.newSingleThreadExecutor()
         val future = executeService.submit(backgroundReceiver)
         val result = future.get()
     }
 
-    private  inner class  WeatherInfoBackgroundReceiver(url: String): Callable<String>{
+    private inner class WeatherInfoBackgroundReceiver(url: String) : Callable<String> {
         private val _url = url
+
         @WorkerThread
         override fun call(): String {
-            TODO("Not yet implemented")
+            var result = ""
+            val url = URL(_url)
+            val con = url.openConnection() as HttpURLConnection
+
+            con.connectTimeout = 1000
+            con.readTimeout = 1000
+            con.requestMethod = "GET"
+            try {
+                con.connect()
+                val stream = con.inputStream
+                result = is2String(stream)
+                stream.close()
+            } catch (e: SocketTimeoutException) {
+                Log.w(DEBUG_TAG, "タイムアウト", e)
+
+            }
+            con.disconnect()
+            return result
+        }
+
+        private fun is2String(stream: InputStream): String {
+            TODO()
         }
 
     }
 
-    private inner class ListItemClickListener: AdapterView.OnItemClickListener{
+    private inner class ListItemClickListener : AdapterView.OnItemClickListener {
         override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
             val item = _list.get(position)
             val q = item.get("q")
-            q?.let{
+            q?.let {
                 val urlFull = "$WEATHER_INFO_URL&q=$q&appid=$APP_ID"
                 receiveWeatherInfo(urlFull)
             }
