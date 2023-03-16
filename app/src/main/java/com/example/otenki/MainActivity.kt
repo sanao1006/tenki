@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createList(): MutableList<MutableMap<String, String>> {
-        val list: MutableList<MutableMap<String, String>> = mutableListOf()
+        var list: MutableList<MutableMap<String, String>> = mutableListOf()
         var city = mutableMapOf("name" to "大阪", "q" to "Osaka")
         list.add(city)
         city = mutableMapOf("name" to "神戸", "q" to "Kobe")
