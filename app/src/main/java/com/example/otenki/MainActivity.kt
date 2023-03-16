@@ -7,8 +7,10 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.SimpleAdapter
+import android.widget.TextView
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -46,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         var city = mutableMapOf("name" to "大阪", "q" to "Osaka")
         list.add(city)
         city = mutableMapOf("name" to "神戸", "q" to "Kobe")
+        list.add(city)
         return list
     }
 
@@ -55,6 +58,26 @@ class MainActivity : AppCompatActivity() {
         val executeService = Executors.newSingleThreadExecutor()
         val future = executeService.submit(backgroundReceiver)
         val result = future.get()
+        showWeatherInfo(result)
+    }
+
+    @UiThread
+    private fun showWeatherInfo(result: String){
+        val rootJSON = JSONObject(result)
+        val cityName = rootJSON.getString("name")
+        val coordJSON = rootJSON.getJSONObject("coord")
+        val latitude = coordJSON.getString("lat")
+        val longitude = coordJSON.getString("lon")
+        val weatherJSONArray = rootJSON.getJSONArray("weather")
+        val weatherJSON = weatherJSONArray.getJSONObject(0)
+        val weather = weatherJSON.getString("description")
+        val telop = "${cityName}の天気"
+        val desc = "現在は${weather}です。\n緯度は${latitude}度で、経度は${longitude}度です。"
+        val tvWeatherTelop = findViewById<TextView>(R.id.tvWeatherTelop)
+        val tvWeatherDesc= findViewById<TextView>(R.id.tvWeatherDesc)
+
+        tvWeatherTelop.text = telop
+        tvWeatherDesc.text = desc
     }
 
     private inner class WeatherInfoBackgroundReceiver(url: String) : Callable<String> {
